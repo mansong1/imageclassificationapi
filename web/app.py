@@ -5,7 +5,10 @@ from flask.logging import create_logger
 import logging
 import bcrypt
 import json
+import requests
 import subprocess
+import numpy as np
+import tensorflow as tf
 
 app = Flask(__name__)
 api = Api(app)
