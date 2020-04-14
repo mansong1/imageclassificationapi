@@ -24,38 +24,6 @@ def UserExist(username):
     else:
         return True
 
-class Register(Resource):
-    def post(self):
-        postedData = request.get_json()
-
-        username = postedData["username"]
-        password = postedData["password"]
-
-        if UserExist(username):
-            retJson = {
-                "status": 301,
-                "msg": "Invalid Username"
-            }
-            return jsonify(retJson)
-        
-        hashed_pw = bcrypt.hashpw(password.encode("utf8"), bcrypt.gensalt())
-
-        users.insert(
-            {
-             "Username": username,
-             "Password": hashed_pw,
-             "Tokens": 5
-            }
-        )
-
-        retJson = {
-            "status": 200,
-            "msg": "You successfully signed up for this API"
-        }
-
-        return jsonify(retJson)
-
-
 def verify_pw(username, password):
     if not UserExist(username):
         return False
@@ -85,6 +53,42 @@ def verifyCreds(username, password):
         return generateReturnDictionary(302, "Invalid Password"), True
 
     return None, False
+
+def updateUser(username, tokens):
+    userUpdate = users.update({
+                        "Username":username
+                        }, {
+                                "$set": {
+                                "Tokens": tokens-1
+                            }
+                        })
+    return userUpdate
+
+class Register(Resource):
+    def post(self):
+        postedData = request.get_json()
+
+        username = postedData["username"]
+        password = postedData["password"]
+
+        if UserExist(username):
+            retJson = {
+                "status": 301,
+                "msg": "Invalid Username"
+            }
+            return jsonify(retJson)
+        
+        hashed_pw = bcrypt.hashpw(password.encode("utf8"), bcrypt.gensalt())
+
+        users.insert(
+            {
+             "Username": username,
+             "Password": hashed_pw,
+             "Tokens": 5
+            }
+        )
+
+        return jsonify( generateReturnDictionary(200, "You successfully signed up for this API") )
 
 class Classify(Resource):
     def post(self):
@@ -117,12 +121,33 @@ class Classify(Resource):
             with open("text.txt") as res:
                 retJson = json.load(res)
         
-        users.update({
-            "Username":username
-        }, {
-            "$set": {
-                "Tokens": tokens-1
-            }
-        })
+        updateUser(username, tokens)
 
         return retJson
+
+class Refill(Resource):
+    def post(self):
+        postedData = request.get_json()
+
+        username = postedData["username"]
+        password = postedData["admin_pw"]
+        amount = postedData["amount"]
+
+        if not UserExist(username):
+            return jsonify( generateReturnDictionary(301, "Invalid Username") )
+
+        correct_pw = "abc123"
+
+        if not password == correct_pw:
+            return jsonify(generateReturnDictionary(304, "Invalid Administrator Password"))
+
+        updateUser(username, tokens)
+
+        return jsonify( generateReturnDictionary(200, "Refilled Sucessfully") )
+
+api.add_resource(Register, '/register')
+api.add_resource(Classify, '/classify')
+api.add_resource(Refill, '/refill')
+
+if __name__=="__main__":
+    app.run(host='0.0.0.0')
