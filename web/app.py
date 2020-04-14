@@ -141,7 +141,13 @@ class Refill(Resource):
         if not password == correct_pw:
             return jsonify(generateReturnDictionary(304, "Invalid Administrator Password"))
 
-        updateUser(username, tokens)
+        users.update({
+            "Username":username
+            }, {
+                "$set": {
+                    "Tokens": amount
+                }
+            })
 
         return jsonify( generateReturnDictionary(200, "Refilled Sucessfully") )
 
