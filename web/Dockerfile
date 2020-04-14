@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Copy source code to working directory
 COPY app.py /app/
+COPY classify_image.py /app/
 COPY requirements.txt /app/
 COPY model_data/boston_housing_prediction.joblib /app/model_data/
 
