@@ -13,6 +13,9 @@ import tensorflow as tf
 app = Flask(__name__)
 api = Api(app)
 
+LOG = create_logger(app)
+LOG.setLevel(logging.INFO)
+
 client = MongoClient("mongodb://db:27017")
 db = client.ImageRecognition
 users = db["Users"]
@@ -66,6 +69,7 @@ def updateUser(username, tokens):
 
 class Register(Resource):
     def post(self):
+        LOG.info(f"Collecting User data")
         postedData = request.get_json()
 
         username = postedData["username"]
@@ -110,15 +114,17 @@ class Classify(Resource):
         if tokens<=0:
             return jsonify( generateReturnDictionary(303, "Not Enough Tokens!") )
 
-        img = requests.get(url)
+        img = requests.get(url, stream=True)
         retJson = {}
 
         with open("temp.jpg", "wb") as f:
             f.write(img.content)
-            proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg')
+            proc = subprocess.Popen('python classify_image.py --image ./temp.jpg')
             proc.communicate()[0]
             proc.wait() #wait will subprocess is done
+            LOG.info(f"Openining text.txt")
             with open("text.txt") as res:
+                LOG.info(f"Prediction Value: \n{res}")
                 retJson = json.load(res)
         
         updateUser(username, tokens)

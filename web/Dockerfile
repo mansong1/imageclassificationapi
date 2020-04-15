@@ -11,9 +11,6 @@ COPY requirements.txt ./
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Expose port 80
-EXPOSE 80
-
 ENTRYPOINT [ "python" ]
 
 # Run app.py at container launch

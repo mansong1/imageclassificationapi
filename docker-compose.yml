@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 services:
     web:
@@ -9,3 +9,7 @@ services:
             - db
     db:
         build: ./db
+    tfserver:
+        build: ./tfserver
+        ports:
+            - '8500:8500'
