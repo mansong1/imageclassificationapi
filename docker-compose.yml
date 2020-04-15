@@ -10,6 +10,7 @@ services:
     db:
         build: ./db
     tfserver:
-        build: ./tfserver
+        image: mansong/resnet_serving
         ports:
             - '8500:8500'
+            - '8501:8501'

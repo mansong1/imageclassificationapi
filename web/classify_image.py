@@ -22,17 +22,21 @@ from __future__ import print_function
 import grpc
 import requests
 import tensorflow as tf
+import operator
+from collections import OrderedDict
 
+from absl import app
+from absl import flags
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2_grpc
 
 # The image URL is the location of the image we should send to the server
 IMAGE_URL = 'https://tensorflow.org/images/blogs/serving/cat.jpg'
 
-tf.app.flags.DEFINE_string('server', 'localhost:8500',
-                           'PredictionService host:port')
-tf.app.flags.DEFINE_string('image', '', 'path to image in JPEG format')
-FLAGS = tf.app.flags.FLAGS
+FLAGS = flags.FLAGS
+flags.DEFINE_string('server', 'tfserver:8500',
+                    'PredictionService host:port')
+flags.DEFINE_string('image', '', 'path to image in JPEG format')
 
 
 def main(_):
@@ -55,8 +59,6 @@ def main(_):
   request.inputs['image_bytes'].CopyFrom(
       tf.make_tensor_proto(data, shape=[1]))
   result = stub.Predict(request, 10.0)  # 10 secs timeout
-  print(result)
-
 
 if __name__ == '__main__':
   tf.compat.v1.app.run()

@@ -1,3 +1,4 @@
+absl-py
 Flask
 flask_restful
 pymongo
@@ -6,3 +7,5 @@ numpy
 tensorflow
 requests
 pylint
+grpcio
+tensorflow-serving-api
