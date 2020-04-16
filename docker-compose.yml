@@ -1,14 +1,14 @@
 version: '3.7'
 
 services:
-    web:
-        build: ./web
-        ports:
-            - '5000:5000'
-        links:
-            - db
-    db:
-        build: ./db
+    # web:
+    #     build: ./web
+    #     ports:
+    #         - '5000:5000'
+    #     links:
+    #         - db
+    # db:
+    #     build: ./db
     tfserver:
         image: mansong/resnet_serving
         ports:
