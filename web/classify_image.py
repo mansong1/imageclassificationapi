@@ -63,7 +63,9 @@ def main(_):
   result = stub.Predict(request, 10.0)  # 10 secs timeout
 
   predicted_idx = str(result.outputs['classes'].int64_val[0]-1) # Get predicted index
-  print(f"This looks like a {imagenet_class_index[predicted_idx][1]}") # Check against imagenet_class_index
+  with open("text.txt", 'w') as f:
+    f.write(imagenet_class_index[predicted_idx][1]) #Check against imagenet_class_index
+    f.close()
 
 if __name__ == '__main__':
   tf.compat.v1.app.run()
